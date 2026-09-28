@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deriv Live Analyser — Even/Odd • Over/Under • Matches • Rise/Fall • High/Low Tick</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Deriv Live Analyser</h1>
+      <p class="tagline">Even/Odd • Over/Under • Matches/Differs • Only Up/Down • High/Low Tick + Hedge Mode</p>
+      <div class="status-bar">
+        <span id="conn-status" class="status offline">Disconnected</span>
+        <span id="last-tick">—</span>
+        <span id="tick-time">—</span>
+      </div>
+    </header>
+
+    <section class="controls">
+      <div class="control-group">
+        <label>Symbol</label>
+        <select id="symbol">
+          <option value="R_10">Volatility 10 Index</option>
+          <option value="R_25">Volatility 25 Index</option>
+          <option value="R_50" selected>Volatility 50 Index</option>
+          <option value="R_75">Volatility 75 Index</option>
+          <option value="R_100">Volatility 100 Index</option>
+          <option value="1HZ10V">Volatility 10 (1s) Index</option>
+          <option value="1HZ25V">Volatility 25 (1s) Index</option>
+          <option value="1HZ50V">Volatility 50 (1s) Index</option>
+          <option value="1HZ75V">Volatility 75 (1s) Index</option>
+          <option value="1HZ100V">Volatility 100 (1s) Index</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label>App ID</label>
+        <input type="text" id="app-id" value="1089" placeholder="Your App ID" />
+      </div>
+
+      <div class="control-group">
+        <label>API Token (optional – for trading)</label>
+        <input type="password" id="api-token" placeholder="Paste Demo/Real token here" autocomplete="off" />
+      </div>
+
+      <button id="btn-connect" class="btn primary">Connect</button>
+      <button id="btn-disconnect" class="btn" disabled>Disconnect</button>
+    </section>
+
+    <section class="grid">
+      <!-- Live Digit Stats -->
+      <div class="card">
+        <h2>Last Digit Statistics</h2>
+        <div class="digit-grid" id="digit-freq"></div>
+        <div class="stats-row">
+          <div><strong>Even</strong> <span id="even-pct">—</span></div>
+          <div><strong>Odd</strong> <span id="odd-pct">—</span></div>
+          <div><strong>Streak</strong> <span id="digit-streak">—</span></div>
+        </div>
+        <div class="recent-digits" id="recent-digits"></div>
+      </div>
+
+      <!-- Contract Selector -->
+      <div class="card">
+        <h2>Contract & Proposal</h2>
+        <div class="form-row">
+          <label>Contract Type</label>
+          <select id="contract-type">
+            <option value="DIGITEVEN">Even</option>
+            <option value="DIGITODD">Odd</option>
+            <option value="DIGITOVER">Over</option>
+            <option value="DIGITUNDER">Under</option>
+            <option value="DIGITMATCH">Matches</option>
+            <option value="DIGITDIFF">Differs</option>
+            <option value="CALL">Only Up (Rise)</option>
+            <option value="PUT">Only Down (Fall)</option>
+            <option value="TICKHIGH">High Tick</option>
+            <option value="TICKLOW">Low Tick</option>
+          </select>
+        </div>
+
+        <div class="form-row" id="barrier-row" style="display:none">
+          <label>Barrier / Digit / Selected Tick</label>
+          <input type="number" id="barrier" min="0" max="9" value="5" />
+        </div>
+
+        <div class="form-row">
+          <label>Duration (ticks)</label>
+          <input type="number" id="duration" min="1" max="10" value="5" />
+        </div>
+
+        <div class="form-row">
+          <label>Stake (USD)</label>
+          <input type="number" id="stake" min="0.35" step="0.01" value="1" />
+        </div>
+
+        <div class="form-row checkbox">
+          <label><input type="checkbox" id="hedge-mode" /> Hedge Mode (place opposing contract too)</label>
+        </div>
+
+        <button id="btn-proposal" class="btn primary" disabled>Get Proposal</button>
+        <button id="btn-buy" class="btn success" disabled>Buy Contract</button>
+
+        <div id="proposal-result" class="proposal-box"></div>
+      </div>
+
+      <!-- Auto / Hedge Panel -->
+      <div class="card">
+        <h2>Auto & Hedge Controls</h2>
+        <p class="warning">Auto mode is <strong>simulation only</strong> unless you enable real trading and supply a token. Use Demo first!</p>
+
+        <div class="form-row checkbox">
+          <label><input type="checkbox" id="auto-enable" /> Enable Auto (simulation)</label>
+        </div>
+        <div class="form-row checkbox">
+          <label><input type="checkbox" id="real-trading" /> Allow Real Money Trades (dangerous)</label>
+        </div>
+
+        <div class="form-row">
+          <label>Auto Strategy</label>
+          <select id="auto-strategy">
+            <option value="even-odd">Even / Odd alternating</option>
+            <option value="over-under">Over / Under</option>
+            <option value="hedge-rise-fall">Hedge Rise + Fall</option>
+            <option value="hedge-high-low">Hedge High Tick + Low Tick</option>
+          </select>
+        </div>
+
+        <button id="btn-auto-start" class="btn" disabled>Start Auto</button>
+        <button id="btn-auto-stop" class="btn danger" disabled>Stop Auto</button>
+
+        <div id="trade-log" class="log-box"></div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Educational tool • No warranty • Trade at your own risk • <a href="https://api.deriv.com" target="_blank">Get your own App ID</a></p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
